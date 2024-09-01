@@ -6,6 +6,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto, UserResponseDto } from './dto';
 import { Role } from '@prisma/client';
+import { excludePassword } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -27,24 +28,28 @@ export class UsersService {
     ]);
 
     return {
-      users: users.map((user) => new UserResponseDto(user)),
+      users: users.map((user) => new UserResponseDto(excludePassword(user))),
       total,
     };
   }
 
   async findOne(id: string): Promise<UserResponseDto> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return new UserResponseDto(user);
+    return new UserResponseDto(excludePassword(user));
   }
 
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -58,11 +63,13 @@ export class UsersService {
       data: updateUserDto,
     });
 
-    return new UserResponseDto(updatedUser);
+    return new UserResponseDto(excludePassword(updatedUser));
   }
 
   async remove(id: string): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
