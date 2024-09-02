@@ -125,3 +125,17 @@ All DTOs (Data Transfer Objects) are decorated with `@ApiProperty` to ensure pro
 ### Prisma
 
 Prisma is used as the ORM for this project. The Prisma schema is defined in `prisma/schema.prisma`. Migrations and seeding are managed using Prisma CLI commands.
+
+### Running Tests
+
+To run tests, use the following command:
+
+```bash
+npm run test:e2e
+```
+
+OR
+
+```bash
+yarn test:e2e
+```

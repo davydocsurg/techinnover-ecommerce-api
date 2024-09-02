@@ -84,37 +84,4 @@ describe('UsersController (e2e)', () => {
 
     expect(response.body.data).toHaveProperty('accessToken');
   });
-
-  it('should get the user profile', async () => {
-    const response = await request(app.getHttpServer())
-      .get(`/users/${adminId}`)
-      .set('Cookie', [`access_token=${adminToken}`]);
-    //   .expect(200);
-
-    console.log('=================USER PROFILE===================');
-    console.log(response.body);
-    console.log('====================================');
-
-    // expect(response.body.data.user).toHaveProperty('email');
-  });
-
-  // it('should ban the user', async () => {
-  //   const user = await prisma.user.findUnique({
-  //     where: { email: 'test@example.com' },
-  //   });
-
-  //   await prisma.user.update({
-  //     where: { id: user.id },
-  //     data: { isBanned: true },
-  //   });
-
-  //   const response = await request(app.getHttpServer())
-  //     .get('/users/profile')
-  //     .set('Authorization', `Bearer ${jwtToken}`)
-  //     .expect(403);
-
-  //   expect(response.body.message).toBe(
-  //     'You are banned from interacting with the system',
-  //   );
-  // });
 });

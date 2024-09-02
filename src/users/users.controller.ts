@@ -21,7 +21,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { handleError } from 'src/utils';
+import { handleError } from '../utils';
 
 @ApiTags('users')
 @Controller('users')

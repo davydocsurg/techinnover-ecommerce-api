@@ -16,7 +16,7 @@ import { RegisterDto, LoginDto, AuthTokensDto } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { ApiBody, ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { handleError } from 'src/utils';
+import { handleError } from '../utils';
 
 @ApiTags('auth')
 @Controller('auth')
