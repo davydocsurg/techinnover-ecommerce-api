@@ -102,7 +102,7 @@ or
 yarn start:dev
 ```
 
-The API will be available at http://localhost:3000.
+The API will be available at http://localhost:3000/api/v1.
 
 ### API Documentation
 
@@ -111,7 +111,13 @@ http://localhost:3000/api/docs
 
 ### Environment Variables
 
-This project requires several environment variables to function correctly. An example `.env` file has been provided as `.env.example`. Ensure you create a `.env` file in the root of your project and update it with your local configuration.
+This project requires several environment variables to function correctly. An example `.env` file has been provided as `.env.example`. Ensure you create a `.env` file in the root of your project and update it with your local configuration. Here are the required environment variables:
+
+```text
+NODE_ENV="development"
+DATABASE_URL="postgresql://YOUR_DB_USERNAME:YOUR_DB_PASSWORD@localhost:5432/YOUR_DB_NAME?schema=public"
+JWT_SECRET="YOUR JWT SECRET KEY"
+```
 
 ### Guards and Middleware
 
