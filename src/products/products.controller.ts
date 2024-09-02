@@ -19,16 +19,41 @@ import {
   ProductResponseDto,
   ProductQueryDto,
 } from './dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard, JwtAuthGuard, OptionalJwtAuthGuard } from '../auth/guards';
+import { Roles } from '../auth/decorators';
 import { Role } from '@prisma/client';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
 
+@ApiTags('products')
 @Controller('products')
+@ApiBearerAuth()
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @ApiBody({
+    type: CreateProductDto,
+    examples: {
+      example1: {
+        summary: 'New Product',
+        value: {
+          name: 'Laptop',
+          description: 'High-performance laptop',
+          price: 999.99,
+          quantity: 1,
+        },
+      },
+    },
+  })
+  @ApiResponse({ type: ProductResponseDto })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(
@@ -39,21 +64,39 @@ export class ProductsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async findAll(@Query() query: ProductQueryDto, @Request() req) {
-    return this.productsService.findAll(query, req.user.userId, req.user.role);
+    const user = req.user || null;
+    const userId = user ? user.userId : undefined;
+    const userRole = user ? user.role : undefined;
+
+    return this.productsService.findAll(query, userId, userRole);
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   async findOne(
     @Param('id') id: string,
     @Request() req,
   ): Promise<ProductResponseDto> {
-    return this.productsService.findOne(id, req.user.userId, req.user.role);
+    const user = req.user || null;
+    const userId = user ? user.userId : undefined;
+    const userRole = user ? user.role : undefined;
+
+    return this.productsService.findOne(id, userId, userRole);
   }
 
   @Patch(':id')
+  @ApiBody({
+    type: UpdateProductDto,
+    examples: {
+      example1: {
+        summary: 'Update Product Price',
+        value: { price: 899.99 },
+      },
+    },
+  })
+  @ApiResponse({ type: ProductResponseDto })
   @UseGuards(JwtAuthGuard)
   async update(
     @Param('id') id: string,

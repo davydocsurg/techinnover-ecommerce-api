@@ -17,8 +17,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class UsersController {
@@ -38,6 +41,16 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @ApiBody({
+    type: UpdateUserDto,
+    examples: {
+      example1: {
+        summary: 'Update User Name',
+        value: { name: 'Jane Doe' },
+      },
+    },
+  })
+  @ApiResponse({ type: UserResponseDto })
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -51,6 +64,11 @@ export class UsersController {
   }
 
   @Post(':id/ban')
+  @ApiResponse({
+    status: 200,
+    description: 'User banned successfully',
+    type: UserResponseDto,
+  })
   async banUser(@Param('id') id: string): Promise<UserResponseDto> {
     return this.usersService.update(id, { isBanned: true });
   }

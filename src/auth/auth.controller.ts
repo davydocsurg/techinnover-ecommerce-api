@@ -15,12 +15,32 @@ import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, AuthTokensDto } from './dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Request, Response } from 'express';
+import { ApiBody, ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @ApiBody({
+    type: RegisterDto,
+    examples: {
+      example1: {
+        summary: 'New User Registration',
+        value: {
+          email: 'user@example.com',
+          password: 'password123',
+          name: 'John Doe',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully',
+    type: AuthTokensDto,
+  })
   @UsePipes(new ValidationPipe())
   async register(
     @Body() registerDto: RegisterDto,
@@ -36,6 +56,20 @@ export class AuthController {
   }
 
   @Post('login')
+  @ApiBody({
+    type: LoginDto,
+    examples: {
+      example1: {
+        summary: 'User Login',
+        value: { email: 'user@example.com', password: 'password123' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Logged in successfully',
+    type: AuthTokensDto,
+  })
   @HttpCode(200)
   @UsePipes(new ValidationPipe())
   async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<void> {
@@ -49,6 +83,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens refreshed successfully',
+    type: AuthTokensDto,
+  })
   @Post('refresh')
   async refreshTokens(
     @Req() req: Request,
@@ -66,6 +106,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
+  @ApiCookieAuth()
+  @ApiResponse({ status: 200, description: 'Logged out successfully' })
   async logout(@Res() res: Response): Promise<void> {
     try {
       this.clearTokenCookies(res);
