@@ -11,6 +11,8 @@ import {
   Request,
   UsePipes,
   ValidationPipe,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import {
@@ -23,6 +25,8 @@ import { RolesGuard, JwtAuthGuard, OptionalJwtAuthGuard } from '../auth/guards';
 import { Roles } from '../auth/decorators';
 import { Role } from '@prisma/client';
 import { ApiTags, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { Response } from 'express';
+import { handleError } from 'src/utils';
 
 @ApiTags('products')
 @Controller('products')
@@ -45,37 +49,67 @@ export class ProductsController {
       },
     },
   })
-  @ApiResponse({ type: ProductResponseDto })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Product created successfully',
+    type: ProductResponseDto,
+  })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   async create(
     @Request() req,
     @Body() createProductDto: CreateProductDto,
-  ): Promise<ProductResponseDto> {
-    return this.productsService.create(req.user.userId, createProductDto);
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.productsService.create(
+        req.user.userId,
+        createProductDto,
+      );
+      res
+        .status(HttpStatus.CREATED)
+        .json({ message: 'Product created successfully', data });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 
   @Get()
   @UseGuards(OptionalJwtAuthGuard)
-  async findAll(@Query() query: ProductQueryDto, @Request() req) {
-    const user = req.user || null;
-    const userId = user ? user.userId : undefined;
-    const userRole = user ? user.role : undefined;
+  async findAll(
+    @Query() query: ProductQueryDto,
+    @Request() req,
+    @Res() res: Response,
+  ) {
+    try {
+      const user = req.user || null;
+      const userId = user ? user.userId : undefined;
+      const userRole = user ? user.role : undefined;
 
-    return this.productsService.findAll(query, userId, userRole);
+      const data = await this.productsService.findAll(query, userId, userRole);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Products fetched successfully', data });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 
   @Get(':id')
   @UseGuards(OptionalJwtAuthGuard)
-  async findOne(
-    @Param('id') id: string,
-    @Request() req,
-  ): Promise<ProductResponseDto> {
-    const user = req.user || null;
-    const userId = user ? user.userId : undefined;
-    const userRole = user ? user.role : undefined;
+  async findOne(@Param('id') id: string, @Request() req, @Res() res: Response) {
+    try {
+      const user = req.user || null;
+      const userId = user ? user.userId : undefined;
+      const userRole = user ? user.role : undefined;
 
-    return this.productsService.findOne(id, userId, userRole);
+      const data = await this.productsService.findOne(id, userId, userRole);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Product fetched successfully', data });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 
   @Patch(':id')
@@ -93,36 +127,63 @@ export class ProductsController {
   async update(
     @Param('id') id: string,
     @Request() req,
+    @Res() res: Response,
     @Body() updateProductDto: UpdateProductDto,
-  ): Promise<ProductResponseDto> {
-    return this.productsService.update(
-      id,
-      req.user.userId,
-      updateProductDto,
-      req.user.role,
-    );
+  ) {
+    try {
+      const data = await this.productsService.update(
+        id,
+        req.user.userId,
+        updateProductDto,
+        req.user.role,
+      );
+
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Product updated successfully', data });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async remove(
-    @Param('id') id: string,
-    @Request() req,
-  ): Promise<{ message: string }> {
-    return this.productsService.remove(id, req.user.userId, req.user.role);
+  async remove(@Param('id') id: string, @Request() req, @Res() res: Response) {
+    try {
+      await this.productsService.remove(id, req.user.userId, req.user.role);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Product deleted successfully' });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 
   @Post(':id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  async approve(@Param('id') id: string): Promise<ProductResponseDto> {
-    return this.productsService.approve(id);
+  async approve(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const data = await this.productsService.approve(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Product approved successfuly', data });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 
   @Post(':id/disapprove')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  async disapprove(@Param('id') id: string): Promise<ProductResponseDto> {
-    return this.productsService.disapprove(id);
+  async disapprove(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const data = await this.productsService.disapprove(id);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: 'Product disapproved successfully', data });
+    } catch (error) {
+      handleError(res, error);
+    }
   }
 }

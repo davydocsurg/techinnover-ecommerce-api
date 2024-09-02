@@ -13,6 +13,7 @@ The goal of this project is to demonstrate the design and development of a scala
   - User registration and authentication (JWT-based).
   - Role-based access control (User, Admin).
   - Admin functionality to view, ban, and unban users.
+  - Banned users are restricted from interacting with the system.
 
 - **Product Management**
   - Authenticated users can create, update, and delete their own products.
@@ -32,7 +33,7 @@ The goal of this project is to demonstrate the design and development of a scala
 
 Ensure you have the following installed on your local development environment:
 
-- [Node.js](https://nodejs.org/) (v14 or higher)
+- [Node.js](https://nodejs.org/) (v20 or higher)
 - [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/)
 - [PostgreSQL](https://www.postgresql.org/) (if using PostgreSQL)
 
@@ -75,6 +76,18 @@ cp .env.example .env
 npx prisma migrate dev
 ```
 
+4. **Seed the database**:
+
+```bash
+npm run seed
+```
+
+OR
+
+```bash
+yarn seed
+```
+
 ### Running the Application
 
 To start the application in development mode, use the following command:
@@ -94,8 +107,21 @@ The API will be available at http://localhost:3000.
 ### API Documentation
 
 This project uses Swagger for API documentation. Once the application is running, you can view the API documentation at:
-http://localhost:3000/api-docs
+http://localhost:3000/api/docs
 
 ### Environment Variables
 
 This project requires several environment variables to function correctly. An example `.env` file has been provided as `.env.example`. Ensure you create a `.env` file in the root of your project and update it with your local configuration.
+
+### Guards and Middleware
+
+- JwtAuthGuard: Ensures that only authenticated users can access certain endpoints.
+- RolesGuard: Provides role-based access control for different endpoints.
+
+### DTOs and Validation
+
+All DTOs (Data Transfer Objects) are decorated with `@ApiProperty` to ensure proper Swagger documentation. Validation is handled using `class-validator` decorators.
+
+### Prisma
+
+Prisma is used as the ORM for this project. The Prisma schema is defined in `prisma/schema.prisma`. Migrations and seeding are managed using Prisma CLI commands.

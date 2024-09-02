@@ -3,10 +3,10 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma';
 import { UpdateUserDto, UserResponseDto } from './dto';
 import { Role } from '@prisma/client';
-import { excludePassword } from 'src/utils';
+import { excludePassword } from '../utils';
 
 @Injectable()
 export class UsersService {
