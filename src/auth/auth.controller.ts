@@ -29,9 +29,9 @@ export class AuthController {
       example1: {
         summary: 'New User Registration',
         value: {
+          name: 'John Doe',
           email: 'user@example.com',
           password: 'password123',
-          name: 'John Doe',
         },
       },
     },

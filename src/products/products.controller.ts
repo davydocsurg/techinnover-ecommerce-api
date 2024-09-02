@@ -22,15 +22,7 @@ import {
 import { RolesGuard, JwtAuthGuard, OptionalJwtAuthGuard } from '../auth/guards';
 import { Roles } from '../auth/decorators';
 import { Role } from '@prisma/client';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiQuery,
-  ApiParam,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('products')
 @Controller('products')
