@@ -95,7 +95,7 @@ export class AuthService {
   private generateTokens(userId: string): AuthTokensDto {
     const payload = { sub: userId };
     return {
-      accessToken: this.jwtService.sign(payload, { expiresIn: '15m' }),
+      accessToken: this.jwtService.sign(payload, { expiresIn: '1d' }),
       refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
     };
   }
